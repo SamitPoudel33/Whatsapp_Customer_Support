@@ -1,0 +1,205 @@
+{
+  "name": "whatsapp",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "839668109226008",
+        "recipientPhoneNumber": "=977 9846262710",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "0d168ecf-7fff-46c1-ab8a-4e9c4e21cf37",
+      "name": "Send message",
+      "webhookId": "011af4c6-db56-4627-8aae-77dc2a9f0a82",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "yibFWSn00G0fD9wn",
+          "name": "WhatsApp account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -160
+      ],
+      "id": "91f33ae4-fb49-4d4a-9391-9acf815662a0",
+      "name": "WhatsApp Trigger",
+      "webhookId": "dea4b537-349e-491d-870a-bfa87cebde7f",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "JxQIlb5d3lTpKJMR",
+          "name": "WhatsApp OAuth account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -144,
+        -160
+      ],
+      "id": "d0c6a0a6-7464-4024-8dfe-01696825c662",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        80
+      ],
+      "id": "d3965793-1257-46d9-8300-714ac141a20b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HcTWcRHoenLkB2aL",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.messages[0].id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        48
+      ],
+      "id": "bc7c388f-3759-4fa8-bcf8-93090c0339a9",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10h8x0EuoEWLGaDdiUYPkaPt4XI86DEluC37q7RC_WW8",
+          "mode": "list",
+          "cachedResultName": "marks",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10h8x0EuoEWLGaDdiUYPkaPt4XI86DEluC37q7RC_WW8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10h8x0EuoEWLGaDdiUYPkaPt4XI86DEluC37q7RC_WW8/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        80,
+        32
+      ],
+      "id": "1451dcbf-6d5e-48ed-8149-877e1cbe29ef",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "c7BJkNfKo8qWQOS9",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "pzNXZkDMGYk5tfBr"
+  },
+  "versionId": "23c9b617-e97c-4d5a-b3ae-725fd4186b68",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0f864a59cd6d0ab01324b465742068db8d2f31de3dc11a84c3082ec84f2b6b61"
+  },
+  "id": "pzNXZkDMGYk5tfBr",
+  "tags": []
+}
